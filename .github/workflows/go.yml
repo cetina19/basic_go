@@ -70,6 +70,6 @@ jobs:
           go-version: ${{ matrix.go-version }}
       - name: go test ci
         run: |
-          echo 'Docker Stage Started Now'
+          echo 'Docker Stage Started Now.'
           echo 'Docker Stage Ended'
         shell: bash

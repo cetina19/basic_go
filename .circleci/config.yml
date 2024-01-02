@@ -7,7 +7,7 @@ jobs:
     executor: node/default
     steps:
       - checkout
-      - go #node/install-packages
+      - go1 #node/install-packages
       - run:
           command: go build main.go
           name: Test app
