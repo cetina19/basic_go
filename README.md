@@ -1,2 +1,2 @@
 # basic_go
-### JIRA Automation Tasks
+### JIRA Automation
