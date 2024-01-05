@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  jira: circleci/jira@2.0
+  node: circleci/node@5.1
+jobs:
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - go1 #node/install-packages
+      - run:
+          command: go build main.go
+          name: Test app
+      - jira/notify:
+          pipeline_id: << pipeline.id >>
+          pipeline_number: << pipeline.number >>
+workflows:
+  build-workflow:
+    jobs:
+      - build:
+          context: https://128227a1-b1f0-4c2b-b7b6-1b32a1afee83.hello.atlassian-dev.net/x1/3Lr2C8pm_6g60d-y9X8PFjd7M9Y
