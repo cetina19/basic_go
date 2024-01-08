@@ -74,7 +74,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: user/app:latest
+          tags: alpercetin/basic_go:latest
 
   static-analysis:
     runs-on: ubuntu-latest
