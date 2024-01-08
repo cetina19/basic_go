@@ -61,4 +61,4 @@ jobs:
       - checkout
       - sonarqube/scan:
           server_url: "http://localhost:9000"
-          login: ""
+          login: "sqp_b7c125a9543ca790e37c5379a514bf6207a0361e"
