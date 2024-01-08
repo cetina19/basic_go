@@ -91,4 +91,4 @@ jobs:
         env:
           SONAR_TOKEN: "sqp_f951dcb845403d1773fa347bf5ae91b0f5875b98"
           SONAR_HOST_URL: "http://localhost:9000"
-          SONAR_SCANNER_OPTS: -X
+          #SONAR_SCANNER_OPTS: -X
