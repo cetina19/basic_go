@@ -1,21 +1,64 @@
 version: 2.1
+
 orbs:
-  jira: circleci/jira@2.0
-  node: circleci/node@5.1
+  go: circleci/go@1.7.0
+  sonarqube: sonarsource/sonarqube@1.1.0
+
+workflows:
+  version: 2
+  go-build-test-and-dockerize:
+    jobs:
+      - build
+      - test
+      - docker
+      - static test
+
 jobs:
   build:
-    executor: node/default
+    docker:
+      - image: cimg/go:1.21.0
     steps:
       - checkout
-      - go1 #node/install-packages
-      - run:
-          command: go build main.go
-          name: Test app
-      - jira/notify:
-          pipeline_id: << pipeline.id >>
-          pipeline_number: << pipeline.number >>
-workflows:
-  build-workflow:
-    jobs:
-      - build:
-          context: https://128227a1-b1f0-4c2b-b7b6-1b32a1afee83.hello.atlassian-dev.net/x1/3Lr2C8pm_6g60d-y9X8PFjd7M9Y
+      - run: echo 'Build Stage Started'
+      - run: mkdir -p .build
+      - run: go mod init basic_go/v2
+      - run: go mod tidy
+      - run: go build -o iugo_app main.go
+      - run: cp go.mod .build/go.mod.orig
+      - run: echo 'Build Stage Ended'
+      - persist_to_workspace:
+          root: .
+          paths:
+            - iugo_app
+
+  test:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run: echo 'Test Stage Started'
+      - run: go mod init basic_go/v2
+      - run: go test
+      - run: echo 'Test Stage Ended'
+
+  docker:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /workspace
+      - setup_remote_docker
+      - run: echo 'Dockerization Stage Started'
+      - run: |
+          docker build -t iugo_app:v1 .
+      - run: echo 'Dockerization Stage Ended'
+
+  static test:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - sonarqube/scan:
+          server_url: "http://localhost:9000"
+          login: ""
