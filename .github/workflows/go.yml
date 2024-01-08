@@ -90,5 +90,5 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: "sqp_f951dcb845403d1773fa347bf5ae91b0f5875b98"
-          SONAR_HOST_URL: "http://localhost:9000"
+          SONAR_HOST_URL: "https://7eca-161-9-87-215.ngrok-free.app"
           #SONAR_SCANNER_OPTS: -X
