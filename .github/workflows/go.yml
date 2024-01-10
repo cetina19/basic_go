@@ -1,4 +1,4 @@
-name: Go CI
+name: Go CI/CD
 
 on:
   push:
@@ -55,7 +55,7 @@ jobs:
           echo 'Test Stage Ended'
         shell: bash
   
-  docker:
+  deployment:
     strategy:
       matrix:
         os: [ "ubuntu-latest" ]
