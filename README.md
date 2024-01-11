@@ -1,2 +1,1 @@
-# basic_go
-### JIRA Automation
+# basic_go app for ci 5
