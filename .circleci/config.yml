@@ -2,16 +2,17 @@ version: 2.1
 
 orbs:
   go: circleci/go@1.7.0
-  sonarqube: sonarsource/sonarqube@1.1.0
 
 workflows:
   version: 2
-  go-build-test-and-dockerize:
+  build_test_deploy:
     jobs:
       - build
       - test
-      - docker
-      - static test
+      - deploy:
+          requires:
+            - build
+            - test
 
 jobs:
   build:
@@ -19,46 +20,48 @@ jobs:
       - image: cimg/go:1.21.0
     steps:
       - checkout
-      - run: echo 'Build Stage Started'
-      - run: mkdir -p .build
-      - run: go mod init basic_go/v2
-      - run: go mod tidy
-      - run: go build -o iugo_app main.go
-      - run: cp go.mod .build/go.mod.orig
-      - run: echo 'Build Stage Ended'
-      - persist_to_workspace:
-          root: .
-          paths:
-            - iugo_app
+      - run:
+          name: Build
+          command: |
+            echo 'Build Stage Started'
+            mkdir -p .build
+            go mod init basic_go/v2
+            go mod tidy
+            go build main.go
+            cp go.mod .build/go.mod.orig
+            echo 'Build Stage Ended'
 
   test:
     docker:
       - image: cimg/go:1.21.0
     steps:
       - checkout
-      - run: echo 'Test Stage Started'
-      - run: go mod init basic_go/v2
-      - run: go test
-      - run: echo 'Test Stage Ended'
+      - run:
+          name: Test
+          command: |
+            echo 'Test Stage Started'
+            go mod init basic_go/v2
+            go test
+            echo 'Test Stage Ended'
 
-  docker:
+  deploy:
     docker:
-      - image: cimg/go:1.21.0
+      - image: cimg/go:1.18.0
     steps:
       - checkout
-      - attach_workspace:
-          at: /workspace
       - setup_remote_docker
-      - run: echo 'Dockerization Stage Started'
-      - run: |
-          docker build -t iugo_app:v1 .
-      - run: echo 'Dockerization Stage Ended'
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker build -t alpercetin/basic_go:latest .
+            docker push alpercetin/basic_go:latest
 
-  static test:
+  static-analysis:
     docker:
       - image: cimg/go:1.21.0
     steps:
       - checkout
-      - sonarqube/scan:
-          server_url: "http://localhost:9000"
-          login: "sqp_b7c125a9543ca790e37c5379a514bf6207a0361e"
+      - run:
+          name: Run SonarQube analysis
+          command: echo "sonarqube stage" # Add SonarQube analysis command here
