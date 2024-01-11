@@ -1,1 +1,1 @@
-# basic_go app for ci 7
+# basic_go app for ci 8
