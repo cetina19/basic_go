@@ -1,4 +1,4 @@
-name: Go CI
+name: Go CI/CD
 
 on:
   push:
@@ -17,14 +17,20 @@ jobs:
         go-version: [ "1.21" ]
     runs-on:  ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - name: go ci
-        run: 
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: go build ci
+        run: |
           echo 'Build Stage Started'
-          checkout scm
-          sh 'mkdir -p .build'
-          sh 'go build main.go'
-          sh 'cp go.mod .build/go.mod.orig'
+          mkdir -p .build
+          go mod init basic_go/v2
+          go mod tidy
+          go build main.go
+          cp go.mod .build/go.mod.orig
           echo 'Build Stage Ended'
         shell: bash
 
@@ -35,9 +41,61 @@ jobs:
         go-version: [ "1.21" ]
     runs-on:  ${{ matrix.os }}
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
       - name: go test ci
-        run:
+        run: |
           echo 'Test Stage Started'
-          sh 'go test'
+          go mod init basic_go/v2
+          go test
           echo 'Test Stage Ended'
         shell: bash
+  
+  deployment:
+    strategy:
+      matrix:
+        os: [ "ubuntu-latest" ]
+        go-version: [ "1.18" ]
+    runs-on:  ${{ matrix.os }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: alpercetin/basic_go:latest
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Run SonarQube analysis
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: "https://7eca-161-9-87-215.ngrok-free.app"
