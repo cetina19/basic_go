@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Build and Push Docker Image
           command: |
-            docker login -u --username "alpercetin" --password-stdin "dckr_pat_qNM1y7SU6oAmjKYsjlUGfIMsam4"
+            docker login --username "alpercetin" --password-stdin "dckr_pat_qNM1y7SU6oAmjKYsjlUGfIMsam4"
             docker build -t alpercetin/basic_go:latest .
             docker push alpercetin/basic_go:latest
 
