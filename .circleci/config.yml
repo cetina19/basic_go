@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Build and Push Docker Image
           command: |
-            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker login -u --username "alpercetin" --password-stdin "dckr_pat_qNM1y7SU6oAmjKYsjlUGfIMsam4"
             docker build -t alpercetin/basic_go:latest .
             docker push alpercetin/basic_go:latest
 
@@ -64,4 +64,4 @@ jobs:
       - checkout
       - run:
           name: Run SonarQube analysis
-          command: echo "sonarqube stage" # Add SonarQube analysis command here
+          command: echo "sonarqube stage"
