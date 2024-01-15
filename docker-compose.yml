@@ -1,0 +1,7 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    image: alpercetin/basic_go:latest
+    command: ["5", "10"]

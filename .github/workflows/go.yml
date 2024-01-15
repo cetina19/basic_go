@@ -1,4 +1,4 @@
-name: Go CI
+name: Go CI/CD
 
 on:
   push:
@@ -55,21 +55,47 @@ jobs:
           echo 'Test Stage Ended'
         shell: bash
   
-  docker:
+  deployment:
     strategy:
       matrix:
         os: [ "ubuntu-latest" ]
-        go-version: [ "1.21" ]
+        go-version: [ "1.18" ]
     runs-on:  ${{ matrix.os }}
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: setup Go ${{ matrix.go-version }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: alpercetin/basic_go:latest
+
+  static-analysis:
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: ${{ matrix.go-version }}
-      - name: go test ci
-        run: |
-          echo 'Docker Stage Started Now.'
-          echo 'Docker Stage Ended'
-        shell: bash
+          go-version: '1.21'
+
+      - name: Run SonarQube analysis
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: "https://7eca-161-9-87-215.ngrok-free.app"
