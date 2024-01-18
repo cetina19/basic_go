@@ -5,7 +5,7 @@ orbs:
 
 parameters:
   run_workflow:
-      type: boolean
+      type: string
       default: false
 
 workflows:
