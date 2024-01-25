@@ -20,7 +20,7 @@ func main() {
 
 	b, err := strconv.Atoi(os.Args[2])
 	if err != nil {
-		fmt.Println("Please two integer args.")
+		fmt.Println("Please two integer args!")
 		os.Exit(1)
 	}
 
