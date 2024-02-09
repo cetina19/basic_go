@@ -6,7 +6,7 @@ orbs:
 parameters:
   run_workflow:
       type: string
-      default: false
+      default: "false"
 
 workflows:
   version: 2
