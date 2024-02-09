@@ -28,8 +28,14 @@ workflows:
              branches:
                only:
                  - main
-                 - master
-    
+                 - beta
+     jobs:
+        - build
+        - test
+        - deploy:
+            requires:
+              - build
+              - test
 
 jobs:
   build:
