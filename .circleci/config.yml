@@ -24,7 +24,6 @@ general:
   branches:
     only:
      - main
-     - dev
 
 jobs:
   build:
