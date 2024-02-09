@@ -20,6 +20,11 @@ workflows:
             - build
             - test
 
+general:
+  branches:
+    only:
+     - main
+
 jobs:
   build:
     docker:
