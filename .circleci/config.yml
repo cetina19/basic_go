@@ -8,7 +8,7 @@ general:
     only:
       - main
     ignore:
-    - dev
+      - dev
 
 workflows:
   version: 2
