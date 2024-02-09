@@ -1,0 +1,78 @@
+version: 2.1
+
+orbs:
+  go: circleci/go@1.7.0
+
+parameters:
+  run_workflow:
+      type: string
+      default: "false"
+
+workflows:
+  version: 2
+  build_test_deploy:
+    when: << pipeline.parameters.run_workflow >>
+    jobs:
+      - build
+      - test
+      - deploy:
+          requires:
+            - build
+            - test
+
+general:
+  branches:
+    only:
+     - main
+
+jobs:
+  build:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            echo 'Build Stage Started'
+            mkdir -p .build
+            go mod init basic_go/v2
+            go mod tidy
+            go build main.go
+            cp go.mod .build/go.mod.orig
+            echo 'Build Stage Ended'
+
+  test:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: |
+            echo 'Test Stage Started'
+            go mod init basic_go/v2
+            go test
+            echo 'Test Stage Ended'
+
+  deploy:
+    docker:
+      - image: cimg/go:1.18.0
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            docker login --username "alpercetin" --password "dckr_pat_qNM1y7SU6oAmjKYsjlUGfIMsam4"
+            docker build -t alpercetin/basic_go:latest .
+            docker push alpercetin/basic_go:latest
+
+  static-analysis:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Run SonarQube analysis
+          command: echo "sonarqube stage"
