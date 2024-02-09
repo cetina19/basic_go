@@ -24,6 +24,8 @@ general:
   branches:
     only:
      - main
+     - feature/*
+     - master
 
 jobs:
   build:
