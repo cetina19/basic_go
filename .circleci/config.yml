@@ -6,7 +6,9 @@ orbs:
 general:
   branches:
     only:
-      -main
+      - main
+    ignore:
+    - dev
 
 workflows:
   version: 2
