@@ -1,0 +1,72 @@
+version: 2.1
+
+orbs:
+  go: circleci/go@1.7.0
+
+general:
+  branches:
+    only:
+      -main
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - test
+      - deploy:
+          requires:
+            - build
+            - test
+
+jobs:
+  build:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            echo 'Build Stage Started'
+            mkdir -p .build
+            go mod init basic_go/v2
+            go mod tidy
+            go build main.go
+            cp go.mod .build/go.mod.orig
+            echo 'Build Stage Ended'
+
+  test:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: |
+            echo 'Test Stage Started'
+            go mod init basic_go/v2
+            go test
+            echo 'Test Stage Ended'
+
+  deploy:
+    docker:
+      - image: cimg/go:1.18.0
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build and Push Docker Image
+          command: |
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker build -t alpercetin/basic_go:latest .
+            docker push alpercetin/basic_go:latest
+
+  static-analysis:
+    docker:
+      - image: cimg/go:1.21.0
+    steps:
+      - checkout
+      - run:
+          name: Run SonarQube analysis
+          command: echo "sonarqube stage" # Add SonarQube analysis command here
