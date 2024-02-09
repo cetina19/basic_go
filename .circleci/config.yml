@@ -12,6 +12,14 @@ general:
 
 workflows:
   version: 2
+  build_test_deploy:
+      jobs:
+        - build
+        - test
+        - deploy:
+            requires:
+              - build
+              - test
   nightly:
      triggers:
        - schedule:
@@ -21,14 +29,7 @@ workflows:
                only:
                  - main
                  - master
-  build_test_deploy:
-    jobs:
-      - build
-      - test
-      - deploy:
-          requires:
-            - build
-            - test
+    
 
 jobs:
   build:
