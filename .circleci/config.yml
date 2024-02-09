@@ -1,0 +1,14 @@
+version: 2.1
+
+workflows:
+   nightly:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - main
+                 - dev
+     jobs:
+       - test
