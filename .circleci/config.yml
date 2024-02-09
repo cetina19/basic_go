@@ -12,6 +12,15 @@ general:
 
 workflows:
   version: 2
+  nightly:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - main
+                 - master
   build_test_deploy:
     jobs:
       - build
