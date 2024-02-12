@@ -11,7 +11,9 @@ parameters:
 workflows:
   version: 2
   build_test_deploy:
-    when: << pipeline.parameters.run_workflow >>
+    #when: << pipeline.parameters.run_workflow >>
+    when: # only execute when triggered by the api
+      equal: [<< pipeline.trigger_source >>, api]
     jobs:
       - build
       - test
