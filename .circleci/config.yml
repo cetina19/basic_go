@@ -9,9 +9,9 @@ parameters:
       default: "false"
 
 workflows:
-  version: 2
   build_test_deploy:
-    when: << pipeline.parameters.run_workflow >>
+    when: 
+      equal: [<< pipeline.trigger_source >>, api]
     jobs:
       - build
       - test
@@ -24,8 +24,8 @@ general:
   branches:
     only:
      - main
-     - feature/*
-     - master
+     - feature/*  # Example to include all feature branches
+     - develop    # Example to include a develop branch
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Build
           command: |
-            echo 'Build Stage Started.'
+            echo 'Build Stage Started'
             mkdir -p .build
             go mod init basic_go/v2
             go mod tidy
