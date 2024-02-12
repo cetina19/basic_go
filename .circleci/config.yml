@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Build
           command: |
-            echo 'Build Stage Started'
+            echo 'Build Stage Started.'
             mkdir -p .build
             go mod init basic_go/v2
             go mod tidy
