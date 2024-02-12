@@ -11,8 +11,8 @@ parameters:
 workflows:
 
   build_test_deploy:
-    #when: 
-      #equal: [<< pipeline.trigger_source >>, api]
+    when: 
+      equal: [<< pipeline.trigger_source >>, api]
     jobs:
       - build:
           filters:
