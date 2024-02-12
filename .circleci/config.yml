@@ -14,12 +14,30 @@ workflows:
     when: 
       equal: [<< pipeline.trigger_source >>, api]
     jobs:
-      - build
-      - test
-      - deploy:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
+      - deploy:
+          requires:
             - test
+          filters:
+            branches:
+              only:
+                - master
+      - static-analysis:
+          filters:
+            branches:
+              only:
+                - master
 
 general:
   branches:
