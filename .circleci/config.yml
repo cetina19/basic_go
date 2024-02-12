@@ -23,12 +23,16 @@ workflows:
 general:
   branches:
     only:
-     - main
+     - master
      - feature/*  # Example to include all feature branches
      - develop    # Example to include a develop branch
 
 jobs:
   build:
+    filters:
+      branches:
+        only:
+          - master
     docker:
       - image: cimg/go:1.21.0
     steps:
@@ -45,6 +49,10 @@ jobs:
             echo 'Build Stage Ended'
 
   test:
+    filters:
+        branches:
+          only:
+            - master
     docker:
       - image: cimg/go:1.21.0
     steps:
@@ -71,6 +79,10 @@ jobs:
             docker push alpercetin/basic_go:latest
 
   static-analysis:
+    filters:
+      branches:
+        only:
+          - master
     docker:
       - image: cimg/go:1.21.0
     steps:
