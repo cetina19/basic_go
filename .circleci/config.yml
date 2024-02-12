@@ -9,16 +9,35 @@ parameters:
       default: "false"
 
 workflows:
+
   build_test_deploy:
     when: 
       equal: [<< pipeline.trigger_source >>, api]
     jobs:
-      - build
-      - test
-      - deploy:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - build
+      - deploy:
+          requires:
             - test
+          filters:
+            branches:
+              only:
+                - master
+      - static-analysis:
+          filters:
+            branches:
+              only:
+                - master
 
 general:
   branches:
@@ -29,10 +48,6 @@ general:
 
 jobs:
   build:
-    filters:
-      branches:
-        only:
-          - master
     docker:
       - image: cimg/go:1.21.0
     steps:
@@ -49,10 +64,6 @@ jobs:
             echo 'Build Stage Ended'
 
   test:
-    filters:
-        branches:
-          only:
-            - master
     docker:
       - image: cimg/go:1.21.0
     steps:
@@ -79,10 +90,6 @@ jobs:
             docker push alpercetin/basic_go:latest
 
   static-analysis:
-    filters:
-      branches:
-        only:
-          - master
     docker:
       - image: cimg/go:1.21.0
     steps:
