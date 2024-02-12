@@ -20,6 +20,7 @@ workflows:
               only:
                 - main
                 - master
+                - m
       - test
       - deploy
       - static-analysis
